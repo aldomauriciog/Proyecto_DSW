@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.9.0.final using JasperReports Library version 6.9.0-cb8f9004be492ccc537180b49c026951f4220bf3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="boleta" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="14fdc6b3-ad35-40a4-ae4d-30f87ddedd44">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="daw-local"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="nrodoc" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+	e.ape_materno,
+	e.ape_paterno,
+	e.nombres,
+	e.fecha_ingreso,
+	e.ape_paterno,
+	e.ape_materno,
+	e.fecha_nacimiento,
+	e.nombres,
+	e.nro_documento,
+	e.fecha_ingreso,
+	daw.tb_cargos.nombre AS nombre_cargo,
+	daw.tb_tipo_documentos.nombre AS nombre_tipo_doc,
+	daw.tb_sistema_pensiones.nombre AS nombre_sistema_pension,
+	daw.tb_tipo_horarios.nombre AS nombre_tipo_horario,
+	(
+	SELECT
+		sum(
+			HOUR (
+			TIMEDIFF( tb_marcacion.hora_ingreso, tb_marcacion.hora_salida ))) 
+	FROM
+		tb_marcacion 
+	WHERE
+		e.id_empleado = tb_marcacion.id_empleado 
+		AND tb_marcacion.fecha >= ( SELECT CAST( DATE_FORMAT( NOW(), '%Y-%m-01' ) AS DATE ) ) 
+		AND tb_marcacion.fecha <= LAST_DAY( NOW())) AS horas_trabajadas, ( SELECT count( tb_marcacion.id_marcacion ) FROM tb_marcacion WHERE e.id_empleado = tb_marcacion.id_empleado AND tb_marcacion.fecha >= ( SELECT CAST( DATE_FORMAT( NOW(), '%Y-%m-01' ) AS DATE ) ) 
+		AND tb_marcacion.fecha <= LAST_DAY(
+		NOW()) 
+	) AS dias_trabajados,
+	(
+	SELECT
+		ROUND((
+				tb_cargos.sueldo /(
+					count( a.Date ) * 8 
+					) * (
+				SELECT
+					sum(
+						HOUR (
+						TIMEDIFF( tb_marcacion.hora_ingreso, tb_marcacion.hora_salida ))) 
+				FROM
+					tb_marcacion 
+				WHERE
+					e.id_empleado = tb_marcacion.id_empleado 
+					AND tb_marcacion.fecha >= ( SELECT CAST( DATE_FORMAT( NOW(), '%Y-%m-01' ) AS DATE ) ) 
+					AND tb_marcacion.fecha <= LAST_DAY(
+					NOW())) 
+				),
+			2 
+		) 
+	FROM
+		(
+		SELECT
+			last_day( '2022-06-01' ) - INTERVAL (
+			a.a + ( 10 * b.a ) + ( 100 * c.a )) DAY AS Date 
+		FROM
+			(
+			SELECT
+				0 AS a UNION ALL
+			SELECT
+				1 UNION ALL
+			SELECT
+				2 UNION ALL
+			SELECT
+				3 UNION ALL
+			SELECT
+				4 UNION ALL
+			SELECT
+				5 UNION ALL
+			SELECT
+				6 UNION ALL
+			SELECT
+				7 UNION ALL
+			SELECT
+				8 UNION ALL
+			SELECT
+				9 
+			) AS a
+			CROSS JOIN (
+			SELECT
+				0 AS a UNION ALL
+			SELECT
+				1 UNION ALL
+			SELECT
+				2 UNION ALL
+			SELECT
+				3 UNION ALL
+			SELECT
+				4 UNION ALL
+			SELECT
+				5 UNION ALL
+			SELECT
+				6 UNION ALL
+			SELECT
+				7 UNION ALL
+			SELECT
+				8 UNION ALL
+			SELECT
+				9 
+			) AS b
+			CROSS JOIN (
+			SELECT
+				0 AS a UNION ALL
+			SELECT
+				1 UNION ALL
+			SELECT
+				2 UNION ALL
+			SELECT
+				3 UNION ALL
+			SELECT
+				4 UNION ALL
+			SELECT
+				5 UNION ALL
+			SELECT
+				6 UNION ALL
+			SELECT
+				7 UNION ALL
+			SELECT
+				8 UNION ALL
+			SELECT
+				9 
+			) AS c 
+		) a 
+	WHERE
+		a.Date BETWEEN '2022-06-01' 
+		AND last_day( '2022-06-01' ) 
+		AND DAYOFWEEK( a.Date ) <> 1 
+	ORDER BY
+		a.Date 
+	) AS sueldo_base,
+	ROUND(( SELECT ( sueldo_base )* 9 / 100 ), 2 ) AS aporte_seguro,
+	ROUND(( SELECT ( sueldo_base ) * tb_sistema_pensiones.porcentaje_descuento / 100 ), 2 ) AS desc_sistema_pension,
+	(
+	ROUND(( SELECT ( sueldo_base )* 9 / 100 ), 2 ) + ROUND(( SELECT ( sueldo_base ) * tb_sistema_pensiones.porcentaje_descuento / 100 ), 2 )) AS desc_total,
+	( SELECT CASE WHEN e.hijos = 1 THEN 930 ELSE 0 END ) AS asignacion_familiar,
+	(
+	ROUND(( SELECT ( sueldo_base )* 9 / 100 ), 2 ) + ( SELECT CASE WHEN e.hijos = 1 THEN 930 ELSE 0 END )) AS total_aporte,
+	(
+	SELECT
+		( sueldo_base ) - ROUND(( SELECT ( sueldo_base ) * tb_sistema_pensiones.porcentaje_descuento / 100 ), 2 ) + (
+		ROUND(( SELECT ( sueldo_base )* 9 / 100 ), 2 ) + ( SELECT CASE WHEN e.hijos = 1 THEN 930 ELSE 0 END )) 
+	) AS total_pagar 
+FROM
+	daw.tb_empleados AS e
+	INNER JOIN daw.tb_cargos ON e.id_cargo = daw.tb_cargos.id_cargo
+	INNER JOIN daw.tb_tipo_documentos ON e.id_tipo_documento = daw.tb_tipo_documentos.id_tipo_documento
+	INNER JOIN daw.tb_sistema_pensiones ON e.id_sistema_pension = daw.tb_sistema_pensiones.id_sistema_pension
+	INNER JOIN daw.tb_tipo_horarios ON e.id_tipo_horario = daw.tb_tipo_horarios.id_tipo_horario 
+WHERE
+	e.nro_documento = $P{nrodoc}]]>
+	</queryString>
+	<field name="ape_materno" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ape_materno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="ape_paterno" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ape_paterno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="nombres" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nombres"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="fecha_ingreso" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_ingreso"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="COLUMN_5" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ape_paterno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="COLUMN_6" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ape_materno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="fecha_nacimiento" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_nacimiento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="COLUMN_8" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nombres"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="nro_documento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nro_documento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="COLUMN_10" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_ingreso"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_empleados"/>
+	</field>
+	<field name="nombre_cargo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nombre_cargo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_cargos"/>
+	</field>
+	<field name="nombre_tipo_doc" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nombre_tipo_doc"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_tipo_documentos"/>
+	</field>
+	<field name="nombre_sistema_pension" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nombre_sistema_pension"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_sistema_pensiones"/>
+	</field>
+	<field name="nombre_tipo_horario" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nombre_tipo_horario"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="tb_tipo_horarios"/>
+	</field>
+	<field name="horas_trabajadas" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="horas_trabajadas"/>
+	</field>
+	<field name="dias_trabajados" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="dias_trabajados"/>
+	</field>
+	<field name="sueldo_base" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="sueldo_base"/>
+	</field>
+	<field name="aporte_seguro" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="aporte_seguro"/>
+	</field>
+	<field name="desc_sistema_pension" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="desc_sistema_pension"/>
+	</field>
+	<field name="desc_total" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="desc_total"/>
+	</field>
+	<field name="asignacion_familiar" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="asignacion_familiar"/>
+	</field>
+	<field name="total_aporte" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="total_aporte"/>
+	</field>
+	<field name="total_pagar" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="total_pagar"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<rectangle radius="20">
+				<reportElement x="360" y="0" width="195" height="80" uuid="c90c15b0-63dd-4866-b8e0-22f7687dc79e"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="360" y="10" width="195" height="20" uuid="ab64eaee-dee7-4244-a972-11f3b430505d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CIBERTEC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="360" y="30" width="195" height="20" uuid="3e3a7747-353a-4fa5-9ef6-c301cd5bb897"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Boleta de Pago]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="360" y="50" width="195" height="20" uuid="5a8a2537-3195-4ce2-b696-963f50bb9612"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RUC: 2318473612]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="150" y="0" width="190" height="80" uuid="3f086626-7488-465a-b159-5d1359d698db"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[AV. URUGUAY NRO. 514 CERCADO DE LIMA LIMA - LIMA - LIMA\n Email: sae_sede_norte@cibertec.pe
+www.cibertec.edu.pe]]></text>
+			</staticText>
+			<image>
+				<reportElement x="40" y="10" width="100" height="66" uuid="c85726fd-912b-4073-8933-97996092eed9"/>
+				<imageExpression><![CDATA["https://upload.wikimedia.org/wikipedia/commons/a/ac/CibertecLogo.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="170" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="5" width="555" height="165" uuid="b8f6f954-1338-4b4b-a14e-e7f47990a6a9"/>
+			</rectangle>
+			<textField>
+				<reportElement x="80" y="10" width="465" height="15" uuid="2d3d9308-01d3-4a8f-b1bd-40b45ac445a9"/>
+				<textFieldExpression><![CDATA[$F{nombres} + " " + $F{ape_paterno} + " " + $F{ape_materno}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="30" width="200" height="15" uuid="a05c9835-a137-424b-badb-21794e32282d"/>
+				<textFieldExpression><![CDATA[$F{nombre_cargo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="30" width="70" height="15" uuid="fdbc3438-274e-4e55-9371-cbdf8d2feafb"/>
+				<text><![CDATA[Cargo: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="10" width="70" height="15" uuid="2a5f3d55-32c2-47ea-be8d-927fbb10ea4f"/>
+				<text><![CDATA[Trabajador:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="50" width="70" height="15" uuid="6926e982-cd79-41af-aaae-42a92ec9d7eb"/>
+				<text><![CDATA[F. Nacimiento:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="50" width="200" height="15" uuid="02c7d1f8-7826-4a4b-9472-3b0ed714dc8d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{fecha_nacimiento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="70" width="200" height="15" uuid="a227b20d-a5b9-45c9-bd47-3d879dc4b87e"/>
+				<textFieldExpression><![CDATA[$F{nro_documento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="70" width="70" height="15" uuid="7f4a051e-011e-4ab0-8055-0ef7da5c5834"/>
+				<textFieldExpression><![CDATA[$F{nombre_tipo_doc} + ":"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="90" width="70" height="15" uuid="4c10ce66-dfd5-4199-a57f-5192b172fa4f"/>
+				<text><![CDATA[F. Ingreso:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="90" width="200" height="15" uuid="9a593505-77de-41c6-afce-89700681a62e"/>
+				<textFieldExpression><![CDATA[$F{fecha_ingreso}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="110" width="70" height="15" uuid="3269798e-c7f5-4a68-8b33-7138ef568042"/>
+				<text><![CDATA[Sis. Pensión:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="110" width="200" height="15" uuid="30950155-ce08-409b-b154-afbc6117b1e6"/>
+				<textFieldExpression><![CDATA[$F{nombre_sistema_pension}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="130" width="70" height="15" uuid="58920cbd-1408-4585-8459-eb6ecab6f465"/>
+				<text><![CDATA[Tipo Horario:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="130" width="200" height="15" uuid="57ecd594-e434-44c4-8930-2425c5098e81"/>
+				<textFieldExpression><![CDATA[$F{nombre_tipo_horario}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="150" width="70" height="15" uuid="e964ce7a-47e5-4ea9-8fdc-ce5089913e32"/>
+				<text><![CDATA[F. Emisión:]]></text>
+			</staticText>
+			<textField pattern="HH:mm">
+				<reportElement x="80" y="150" width="200" height="15" uuid="997737ae-47ed-418d-b96b-54d8d0dd3547"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="330" y="30" width="100" height="15" uuid="91e2dc20-084b-44e3-a1fe-d743d10179b1"/>
+				<text><![CDATA[Horas efectivas:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="444" y="30" width="100" height="15" uuid="c9fc1f43-f321-4770-87a3-11a47ea3e9ac"/>
+				<textFieldExpression><![CDATA[$F{horas_trabajadas}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="330" y="50" width="100" height="15" uuid="054d0f2e-d54b-43d2-ad67-3653c9f44192"/>
+				<text><![CDATA[Dias efectivos:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="444" y="50" width="100" height="15" uuid="5094d618-83a1-4fbe-bc26-6482c2da3aeb"/>
+				<textFieldExpression><![CDATA[$F{dias_trabajados}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="146" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<rectangle>
+				<reportElement x="0" y="0" width="210" height="110" uuid="2eca2d9b-68e3-4624-8fa2-d523f0646ea1"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="210" y="0" width="230" height="110" uuid="76036f20-e289-416d-aa9f-cb6ec19c449e"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="440" y="0" width="115" height="110" uuid="62cc0ce7-d1da-4d85-a0c3-545917ae37b2"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="b6bf6770-a1c3-4dc6-aaf7-a503598cc00e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONCEPTOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="110" height="20" uuid="f4dacb66-4646-40cd-a3f3-244309644999"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[INGRESOS]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="90" width="210" height="20" uuid="85b8e3ee-814e-41ec-a70d-840abd3aa5d4"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="10" y="90" width="90" height="20" uuid="d3d0d421-8327-4681-a100-d7b278359af6"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Ingresos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="210" y="0" width="110" height="20" uuid="4e308551-66ba-4311-a05e-be1257fc2d43"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONCEPTOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="320" y="0" width="120" height="20" uuid="0b22bc29-2fbd-4c82-acce-3bc2c35597cc"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCUENTOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="440" y="0" width="115" height="20" uuid="2b955ec2-bd89-4222-b183-c7f667426784"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[APORTES]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="210" y="90" width="230" height="20" uuid="6fb6f182-baa7-4084-9426-ae5e9e88d87d"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="440" y="90" width="115" height="20" uuid="c23ca607-c798-45ac-ac3b-6988188d5a9d"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="220" y="90" width="90" height="20" uuid="8f8bded3-3f59-40a8-b796-f5cbe1f8b65a"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Desc/Aporte]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="507dc70d-61ce-4b73-8f7b-72a4a3d91a6c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONCEPTOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="110" height="20" uuid="e2762209-fcdf-4124-b3a5-a2e37936dd55"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[INGRESOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="210" y="0" width="110" height="20" uuid="f9b630dc-7d46-43d6-b870-a4057c743ec5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONCEPTOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="320" y="0" width="120" height="20" uuid="243889bc-1849-4bc8-b41b-586dd4199d16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCUENTOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="440" y="0" width="115" height="20" uuid="c630be9c-8665-4450-8f5d-3b2df7cd536b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[APORTES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="20" width="90" height="20" uuid="4c2ee75a-2c1d-484c-ad18-d903563ee996"/>
+				<text><![CDATA[Sueldo Base]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="2490" y="0" width="90" height="146" uuid="982770f6-6a56-4c16-b845-bb92c3a1f54d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="070cd281-f11a-46a8-b88b-a2c3e5b5efdb"/>
+				</reportElement>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{sueldo_base}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2490" y="0" width="90" height="146" uuid="771582eb-353e-4be6-b2e5-cc31fecf0d8a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="070cd281-f11a-46a8-b88b-a2c3e5b5efdb"/>
+				</reportElement>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{sueldo_base}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="20" width="100" height="20" uuid="4596b88c-6990-4647-abf3-04dd24c00ae9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="283911da-2468-4fc1-9c3f-92fc0dec3e96"/>
+				</reportElement>
+				<textFieldExpression><![CDATA["APORTE-"+$F{nombre_sistema_pension}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2770" y="0" width="100" height="146" uuid="cf500b27-51a0-40c6-98fa-8d07861cc00a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2fb45fbf-17c8-4e93-a2f8-35e93f8b08e5"/>
+				</reportElement>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{desc_sistema_pension}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="220" y="45" width="90" height="20" uuid="fececc27-cd92-4141-bcf6-031547970dfe"/>
+				<text><![CDATA[ESSALUD]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="447" y="45" width="100" height="20" uuid="446d62f6-69f7-4e1e-aa0f-aa3bd3d35e38">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="26d5548e-0738-4559-bc44-1c89727cc693"/>
+				</reportElement>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{aporte_seguro}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="220" y="70" width="90" height="20" uuid="0ddd974b-84a5-4c7e-9148-361850ca7981"/>
+				<text><![CDATA[Asignacion Fam.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="447" y="70" width="100" height="20" uuid="8d558c1c-ca9e-4b61-8850-2a2bea4998c5">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3d785eed-2885-461e-a27f-330be993a59a"/>
+				</reportElement>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{asignacion_familiar}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="450" y="90" width="100" height="20" uuid="b6ea2487-afb6-461c-aa2b-2f663dbaec49">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5e6b39a9-37b6-40c9-a7c1-bbd6c432f267"/>
+				</reportElement>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{total_aporte}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2770" y="0" width="100" height="146" uuid="6f2ba62f-0e06-406a-aaab-0752539a0887">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2fb45fbf-17c8-4e93-a2f8-35e93f8b08e5"/>
+				</reportElement>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{desc_sistema_pension}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="20" width="90" height="20" uuid="46637a53-5ebd-47de-b76b-08c97087f6c4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="af356aff-a96e-49b8-af6a-0244a39c5442"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sueldo_base}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="90" width="90" height="20" uuid="3646a873-5e83-44e8-a701-529112566f0f">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="af356aff-a96e-49b8-af6a-0244a39c5442"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sueldo_base}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="330" y="20" width="100" height="20" uuid="95ab4600-b65d-48d7-84cc-fda011285b2c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="27809df8-3eae-4c3c-bd88-72b75296b786"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{desc_sistema_pension}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="330" y="90" width="100" height="20" uuid="bf2ea2ef-96c0-474e-b8c4-4174837b4bee">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="27809df8-3eae-4c3c-bd88-72b75296b786"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{desc_sistema_pension}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="300" splitType="Stretch">
+			<rectangle>
+				<reportElement x="440" y="10" width="115" height="20" uuid="a05ceefc-defe-4b05-844e-89db15ee423e"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="330" y="10" width="100" height="20" uuid="dcb12d2c-dc32-4db9-acc0-005863265c46"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Neto a Pagar:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="50" y="74" width="110" height="1" uuid="ff0eaa1f-3d71-41bb-9f74-ace5bb85c335"/>
+			</line>
+			<line>
+				<reportElement x="340" y="74" width="110" height="1" uuid="dfaf0e8a-82d9-4926-a745-51246707fc0c"/>
+			</line>
+			<staticText>
+				<reportElement x="50" y="80" width="110" height="30" uuid="244a1b76-6861-4711-80c4-cf77e94493d0"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Firma del Trabajador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="340" y="80" width="110" height="30" uuid="72020cd1-c700-4dde-9237-6b98a6f69d2c"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Firma del Empleador]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="450" y="10" width="100" height="20" uuid="35e56147-b273-4ffb-b65a-b9ece813a03e"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{total_pagar}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>

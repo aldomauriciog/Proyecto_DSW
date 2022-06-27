@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head-usuarios" th:include="shared/layout/head::head-general(title='Listado de Usuarios')">
+	<link rel="stylesheet" th:href="@{/assets/adminLTE/plugins/summernote/summernote-bs4.min.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="@{/css/mantenimiento-usuarios.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style type="text/css">
+    	.has-error .help-block {
+  			color: red;
+		}
+		h1{
+			font-size: 25px !important;
+    		color: #415563;
+    		text-transform: uppercase !important;
+		}
+		.card-header{
+			color:#ffffff !important;
+			background-image: linear-gradient(to top, #4481eb 0%, #04befe 100%) !important;
+			border: none !important;
+		}
+		.fa-minus, .fa-plus{
+			color:#ffffff !important;
+		}
+		.btn-agregar{
+			color:#ffffff !important;
+			text-transform: uppercase !important;
+			background-image: linear-gradient(to top, #4481eb 0%, #04befe 100%) !important;
+		}
+		.tabla-usuarios{
+			border: 1px solid red !important;
+		}
+		.ag-header-cell{
+			background: red;
+			color: white !important;
+			text-transform: uppercase !important;
+			background-color:#343a40 !important;
+			font-size: 11px!important;
+		}
+		.modal-header{
+			color:#fff;
+			background-image: linear-gradient(to top, #4481eb 0%, #04befe 100%);
+			border: none;
+			display: flex;
+  			justify-content: center;
+  			text-transform: uppercase;
+  		}
+  		.label-formulario{
+			font-size: 14px;
+			color:#415563;
+			font-weight: 100 !important;
+		}
+		.icon-modulo{
+			display: flex;
+			font-size: 20px;
+			margin-left: 5px;
+		}
+		.btn-guardar{
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			box-shadow: inset -8px -5px 11px -5px rgb(0 0 0 / 61%) !important;
+			text-transform: uppercase;
+			background-image: linear-gradient(to top, #4481eb 0%, #04befe 100%);
+			border: none;
+			padding: 10px;
+		}
+		.btn-cerrar{
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			box-shadow: inset -8px -5px 11px -5px rgb(0 0 0 / 61%) !important;
+			text-transform: uppercase;
+			background-image: linear-gradient(-20deg, #fc6076 0%, #ff9a44 100%);
+			border: none;
+			padding: 10px;
+		}
+		.btn-guardar:hover, .btn-cerrar:hover{
+			transform: scale(0.97);
+		}
+		.fa-search{
+			color: grey !important;
+		}
+		
+		.fa-edit{
+			color: #04befe !important;
+			font-size: 15px;
+		}
+		.fa-trash-alt{
+			color: #ff9a44 !important;
+			font-size: 15px;
+		}
+		.swal2-styled.swal2-confirm{
+			box-shadow: inset -8px -5px 11px -5px rgb(0 0 0 / 61%) !important;
+			background-image: linear-gradient(to top, #4481eb 0%, #04befe 100%) !important;
+		}
+		.swal2-styled.swal2-confirm:after {
+			content: "\2713" !important;
+			margin-left: 5px !important;
+			font-weight: bold !important;
+			color: white !important;
+		}
+		.swal2-styled.swal2-cancel{
+			box-shadow: inset -8px -5px 11px -5px rgb(0 0 0 / 61%) !important;
+			background-image: linear-gradient(-20deg, #fc6076 0%, #ff9a44 100%) !important;
+		}
+		.swal2-styled.swal2-cancel:after {
+			content: "\2717" !important;
+			margin-left: 5px !important;
+			font-weight: bold !important;
+			color: white !important;
+		}
+    </style>
+</head>
+<body>
+
+</body>
+</html>

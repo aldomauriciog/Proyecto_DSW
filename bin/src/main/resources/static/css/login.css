@@ -1,0 +1,113 @@
+  	.banner{
+	position: relative;
+	width: 100%;
+	height: calc(100vh - 50px);
+	background-color: #F5F5F5;
+	background-size: cover;
+	background-position: center;
+	transition: all .1s ease-out;
+	background-image: url('./assets/adminLTE/img/banner-1.jpg');
+	animation: banner 28s infinite linear;
+	}
+	.banner-content{
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	color: #FFF;
+	background-color: rgba(0, 10, 20, .7);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	}
+	.banner-content h1{
+	margin: 0;
+	padding: 0;
+	padding-bottom: 30px;
+	font-size: 40px;
+	text-align: center;
+	}
+	.banner-content a{
+	text-decoration: none;
+	color: #FFF;
+	padding: 9px 20px;
+	border: 1px solid #FFF;
+	text-transform: uppercase;
+	transition: all .3s ease-in-out;
+	}
+	.banner-content a:hover{
+	background-color: #fff;
+	color: #333;
+	}
+	@keyframes banner{
+	0%{
+		background-image: url('../assets/adminLTE/img/banner-1.jpg');
+	}
+	25%{
+		background-image: url('../assets/adminLTE/img/banner-1.jpg');
+	}
+
+
+	26%{
+		background-image: url('../assets/adminLTE/img/banner-2.jpg');
+	}
+	50%{
+		background-image: url('../assets/adminLTE/img/banner-2.jpg');
+	}	
+
+
+	51%{
+		background-image: url('../assets/adminLTE/img/banner-3.jpg');
+	}
+	75%{
+		background-image: url('../assets/adminLTE/img/banner-3.jpg');
+	}
+	
+
+	76%{
+		background-image: url('../assets/adminLTE/img/banner-4.jpg');
+	}
+	100%{
+		background-image: url('../assets/adminLTE/img/banner-4.jpg');
+	}
+
+	}
+	.login-box{
+
+		position: absolute;
+	}
+	h1{
+		margin-top: -320px !important;
+		font-size: 4.7vw !important;
+		font-weight: bold !important;
+		text-transform: uppercase !important;
+	}
+	
+	@media(min-width:768px){
+		h1{
+		text-transform: uppercase;
+		margin-top: -370px !important;
+		font-weight: bold !important;
+		font-size: 45px !important;
+		color: #FFFFFF;
+		text-shadow: 3px 2px 3px rgba(255,255,255,.2);
+		}
+	}
+	.text-login{
+		color: white;
+	}
+	.card{
+		background: transparent;
+	}
+	.card-body{
+		border-radius: 10px;
+		box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+	}
+	.text-invalido{
+		font-weight: bold;
+		text-shadow: tomato;
+	}
+	.animate__backInDown, .animate__fadeInUpBig{
+		animation-duration: 2s;
+	}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administrador | Log in</title>
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" th:href="@{/assets/adminLTE/plugins/fontawesome-free/css/all.min.css}">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" th:href="@{/assets/adminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css}">
+  <!-- Theme style -->
+  <link rel="stylesheet" th:href="@{/assets/adminLTE/css/alt/adminlte.min.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body class="hold-transition login-page">
+
+	
+  <section class="banner">
+		<div class="banner-content">
+			<h1 class="animate__animated animate__backInDown">Sistema de Gestión de Planillas de Pago</h1>
+		</div>
+	</section>
+
+<div class="login-box animate__animated animate__slideInRight">
+  <div class="login-logo ">
+    <a href="../../index2.html"><b class="text-login">Login</b></a>
+    
+  </div>
+  <div th:text="${message}" class="text-danger text-center text-invalido"></div>
+  <!-- /.login-logo -->
+  <div class="card">
+    <div class="card-body login-card-body mensaje animate__animated animate__fadeInUpBig">
+<!--       <p class="login-box-msg">Registrese para iniciar sesión</p> -->
+
+      <form th:action="@{/app/auth/login}" method="post">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" autocomplete="off" name="username" placeholder="Usuario">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" name="password" placeholder="Contraseña">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row justify-content-between">
+          <div class="col-6">
+<!--             <div class="icheck-primary"> -->
+<!--               <input type="checkbox" id="remember"> -->
+<!--               <label for="remember"> -->
+<!--                 Recordar -->
+<!--               </label> -->
+<!--             </div> -->
+          </div>
+          <!-- /.col -->
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+
+	
+
+<!--       <div class="social-auth-links text-center mb-3"> -->
+<!--         <p>- OR -</p> -->
+<!--         <a href="#" class="btn btn-block btn-primary"> -->
+<!--           <i class="fab fa-facebook mr-2"></i> Sign in using Facebook -->
+<!--         </a> -->
+<!--         <a href="#" class="btn btn-block btn-danger"> -->
+<!--           <i class="fab fa-google-plus mr-2"></i> Sign in using Google+ -->
+<!--         </a> -->
+<!--       </div> -->
+<!--       /.social-auth-links -->
+
+<!--       <p class="mb-1"> -->
+        <a href="forgot-password.html">Olvide mi contraseña</a>
+      </p>
+      <p class="mb-0">
+        <a href="register.html" class="text-center">Registrarse</a>
+      </p>
+    </div>
+    <!-- /.login-card-body -->
+  </div>
+    
+</div>
+
+
+
+<!-- /.login-box -->
+<script src="https://kit.fontawesome.com/c7fe073229.js" crossorigin="anonymous"></script>
+<!-- jQuery -->
+<script th:src="@{/assets/adminLTE/plugins/jquery/jquery.min.js}"></script>
+<!-- Bootstrap 4 -->
+<script th:src="@{/assets/adminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<!-- AdminLTE App -->
+<script th:src="@{/assets/adminLTE/js/adminlte.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/login/index.js}"></script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout/head-empleados::head-empleados">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+	<div th:replace="shared/layout/header::header"></div>
+	<!-- Content Wrapper. Contains page content -->
+	<div class="content-wrapper">
+		<!-- Content Header (Page header) -->
+		<div class="content-header">
+			<div class="container-fluid">
+				<div class="row mb-2">
+					<div class="col-sm-6">
+						<h1 class="m-0">Listado de Empleados</h1>
+					</div>
+					<!-- /.col -->
+					<div class="col-sm-6">
+						<ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item"><a href="#">Inicio</a></li>
+							<li class="breadcrumb-item active">Empleados</li>
+						</ol>
+					</div>
+					<!-- /.col -->
+				</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.container-fluid -->
+		</div>
+		<!-- /.content-header -->
+
+		<!-- Main content -->
+		<div class="row m-0">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<h3 class="card-title ml-2">
+							<i class="nav-icon fas fa-user"></i> <strong class="ml-1">Listado
+								de Empleados</strong>
+						</h3>
+						<div class="card-tools">
+							<button type="button" class="btn btn-tool"
+								data-card-widget="collapse" title="Collapse">
+								<i class="fas fa-minus"></i>
+							</button>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="row m-0 justify-content-between">
+							<div class="col-4 mb-3">
+								<div class="input-group">
+									<input id="search" onkeyup="search()" autocomplete="off"
+										placeholder="Buscar" type="text"
+										class="form-control form-control-sm">
+									<div class="input-group-prepend">
+										<span class="input-group-text"><i class="fas fa-search"></i></span>
+									</div>
+								</div>
+							</div>
+							<div class="col-auto">
+								<button onclick="openModal()" class="btn btn-success btn-agregar"
+									id="btn-agregar">Agregar</button>
+							</div>
+							<div class="col-12">
+								<div id="myGrid" class="ag-theme-alpine" style="width: 100%;"></div>
+							</div>
+						</div>
+					</div>
+					<div class="col-12 pl-4 d-flex">
+						<div class="row">
+							<div class="col-auto">
+								<nav aria-label="Page navigation example">
+									<ul class="pagination">
+										<li class="page-item"><a class="page-link"
+											onclick="previous()" aria-label="Previous"> <span
+												aria-hidden="true">&laquo;</span>
+										</a></li>
+										<li class="page-item"><a class="page-link" id="page"
+											href="#">1</a></li>
+										<li class="page-item"><a class="page-link"
+											onclick="next()" aria-label="Next"> <span
+												aria-hidden="true">&raquo;</span>
+										</a></li>
+									</ul>
+								</nav>
+							</div>
+							<div class="col-auto pr-0 pt-1">
+								<span>Mostrar</span>
+							</div>
+							<div class="col-auto d-flex align-items-start">
+								<select id="page-size" onchange="onPageSizeChanged()"
+									class="form-control form-control-sm"
+									aria-label=".form-select-sm example">
+									<option selected value="5">5</option>
+									<option value="10">10</option>
+								</select>
+							</div>
+							<div class="col-auto pl-0 pt-1">
+								<span>Registros</span>
+							</div>
+						</div>
+					</div>
+					<!-- /.card-body -->
+					<!-- <div class="card-footer">
+                Footer
+              </div> -->
+					<!-- /.card-footer-->
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade animate__animated animate__zoomIn"
+			id="exampleModal" tabindex="-1" data-bs-backdrop="static"
+			data-bs-keyboard="false" aria-labelledby="exampleModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title h5-titulo" id="exampleModalLabel"></h5>
+					</div>
+					<ul class="nav nav-tabs" id="myTab" role="tablist">
+					  <li class="nav-item">
+					    <a class="nav-link active" id="datos-personales-tab" data-toggle="tab" href="#datos-generales" role="tab" aria-controls="datos-generales" aria-selected="true">Datos Personales</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" id="datos-empresas-tab" data-toggle="tab" href="#datos-empresas" role="tab" aria-controls=datos-empresas-tab aria-selected="false">Datos Empleados</a>
+					  </li>
+					</ul>
+					<div class="tab-content" id="myTabContent">
+					  <div class="tab-pane fade show active" id="datos-generales" role="tabpanel" aria-labelledby="datos-personales-tab">
+					  	<form id="idRegistra" data-toggle="validator" role="form"
+						class="modal-body" onsubmit="return false;">
+						<div class="row label-formulario">
+							<div class="col-4 form-group">
+								<label class="form-label">Codigo</label> <input
+									class="form-control form-control-sm" name="idEmpleado"
+									type="text" disabled>
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Nombres</label> <input
+									class="form-control form-control-sm" id="nombres" required
+									name="nombres" type="text">
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Apellido Paterno</label> <input
+									class="form-control form-control-sm" id="apePaterno" required
+									name="apePaterno" type="text">
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Apellido Materno</label> <input
+									class="form-control form-control-sm" id="apeMaterno" required
+									name="apeMaterno" type="text">
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Sexo</label> <select required
+									name="sexo" class="form-control form-control-sm">
+									<option value="M">Masculino</option>
+									<option value="F">Femenino</option>
+								</select>
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Fecha Nacimiento</label> <input
+									class="form-control form-control-sm" id="fechaNacimiento" required
+									name="fechaNacimiento" type="date">
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Tipo Documento</label> <select required
+									name="idTipoDocumento" class="form-control form-control-sm">
+
+								</select>
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Numero Documento</label> <input required
+									class="form-control form-control-sm" id="nroDocumento"
+									name="nroDocumento" type="text">
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Estado Civil</label> <select required
+									name="estadoCivil" class="form-control form-control-sm">
+									<option value="S">Soltero</option>
+									<option value="C">Casado</option>
+									<option value="V">Viudo</option>
+									<option value="D">Divorciado</option>
+								</select>
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Email</label> <input required
+									class="form-control form-control-sm" id="email"
+									name="email" type="text">
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Celular</label> <input required
+									class="form-control form-control-sm" id="celular"
+									name="celular" type="text">
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Direccion</label> <input required
+									class="form-control form-control-sm" id="direccion"
+									name="direccion" type="text">
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Nro Hijos</label> <input
+									class="form-control form-control-sm" id="hijos"
+									name="hijos" type="number">
+							</div>
+						</div>
+					</form>
+					  	
+					  </div>
+					  <div class="tab-pane fade" id="datos-empresas" role="tabpanel" aria-labelledby="datos-empresas-tab">
+					  <form id="idRegistra2" data-toggle="validator" role="form"
+						class="modal-body" onsubmit="return false;">
+						<div class="row label-formulario">
+							<div class="col-4 form-group">
+								<label class="form-label">Area</label> <select onchange="llenarSelectCargo()"
+									name="idArea" class="form-control form-control-sm">
+								</select>
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Cargo</label> <select required
+									name="idCargo" class="form-control form-control-sm">
+								</select>
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Tipo Horario</label> <select required
+									name="idTipoHorario" class="form-control form-control-sm">
+								</select>
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Fecha Ingreso</label> <input required
+									class="form-control form-control-sm" id="fechaIngreso"
+									name="fechaIngreso" type="date">
+							</div>
+							<div class="col-4 form-group">
+								<label class="form-label">Sistema de Pension</label> <select required
+									name="idSistemaPension" class="form-control form-control-sm">
+
+								</select>
+							</div>
+						</div>
+					</form>
+					  </div>
+					</div>
+					<div class="modal-footer">
+							<button type="submit" id="btnGuardar" onclick="guardar()"
+								class="btn btn-primary btn-guardar">
+								Guardar<i class='bx bx-save icon-modulo'></i>
+							</button>
+							<button type="button" onclick="limpiarModal()"
+								class="btn btn-secondary btn-cerrar" data-bs-dismiss="modal">
+								Cerrar<i class='bx bx-window-close icon-modulo'></i>
+							</button>
+						</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+	<footer class="main-footer"> </footer>
+
+	<!-- Control Sidebar -->
+	<aside class="control-sidebar control-sidebar-dark">
+		<!-- Control sidebar content goes here -->
+	</aside>
+	<!-- /.control-sidebar -->
+	</div>
+	
+	<!-- ./wrapper -->
+	<div th:replace="shared/layout/script::script"></div>
+	
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script
+		src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+	<script type="text/javascript"
+		th:src="@{/shared/cell-render/EditDeleteComponent.js}"></script>
+		<script type="text/javascript"
+		th:src="@{/shared/cell-render/EditDeleteReportComponent.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/mantenimiento-empleados/listado-empleados.js}"></script>
+	<script
+		src="https://cdn.bootcdn.net/ajax/libs/bootstrap-validator/0.4.0/js/bootstrapValidator.js"></script>
+
+	<script type="text/javascript">
+		$(document)
+				.ready(
+						function() {
+							$('#idRegistra')
+									.bootstrapValidator(
+											{
+												fields : {
+													nombres : {
+														validators : {
+															notEmpty : {
+																message : 'Campo nombres es obligatorio'
+															},
+															regexp : {
+																regexp : /.{4,50}/,
+																message : 'De 4 a 50 caracteres'
+															}
+														}
+													},
+													apePaterno : {
+														validators : {
+															notEmpty : {
+																message : 'Campo apellido paterno es obligatorio'
+															},
+															regexp : {
+																regexp : /.{4,20}/,
+																message : 'De 4 a 20 caracteres'
+															}
+														}
+													},
+													apeMaterno : {
+														validators : {
+															notEmpty : {
+																message : 'Campo apellido materno es obligatorio'
+															},
+															regexp : {
+																regexp : /.{4,20}/,
+																message : 'De 4 a 20 caracteres'
+															}
+														}
+													},
+													sexo : {
+														validators : {
+															notEmpty : {
+																message : 'Campo sexo es obligatorio'
+															}
+														}
+													},
+													fechaNacimiento: {
+														validators : {
+															notEmpty : {
+																message : 'Campo fecha nacimiento es obligatorio'
+															}
+														}
+													},
+													idTipoDocumento: {
+														validators : {
+															notEmpty : {
+																message : 'Campo tipo documento es obligatorio'
+															}
+														}
+													},
+													nroDocumento: {
+														validators : {
+															notEmpty : {
+																message : 'Campo numero documento es obligatorio'
+															}
+														}
+													},
+													estadoCivil: {
+														validators : {
+															notEmpty : {
+																message : 'Campo estado civil es obligatorio'
+															}
+														}
+													},
+													email: {
+														validators : {
+															notEmpty : {
+																message : 'Campo email es obligatorio'
+															}
+														}
+													},
+													celular: {
+														validators : {
+															notEmpty : {
+																message : 'Campo celular es obligatorio'
+															}
+														}
+													},
+													direccion: {
+														validators : {
+															notEmpty : {
+																message : 'Campo direccion es obligatorio'
+															}
+														}
+													}
+												}
+											});
+
+						});
+		
+		$(document)
+		.ready(
+				function() {
+					$('#idRegistra2')
+							.bootstrapValidator(
+									{
+										fields : {
+											idArea : {
+												validators : {
+													notEmpty : {
+														message : 'Campo area es obligatorio'
+													}
+												}
+											},
+											idCargo : {
+												validators : {
+													notEmpty : {
+														message : 'Campo cargo es obligatorio'
+													}
+												}
+											},
+											idTipoHorario : {
+												validators : {
+													notEmpty : {
+														message : 'Campo tipo horario es obligatorio'
+													}
+												}
+											},
+											fechaIngreso : {
+												validators : {
+													notEmpty : {
+														message : 'Campo fecha ingreso es obligatorio'
+													}
+												}
+											},
+											idSistemaPension : {
+												validators : {
+													notEmpty : {
+														message : 'Campo sistema pension es obligatorio'
+													}
+												}
+											},
+										}
+									});
+
+				});
+
+		let h5_titulo = document.querySelector('.h5-titulo')
+
+		$(document).on("click", "#btn-agregar", function(e) {
+			console.log(e.target);
+			h5_titulo.textContent = 'Modulo de Registro de Empleados'
+
+		})
+		$(document).on("click", "#editButton", function(e) {
+			console.log(e.target);
+			h5_titulo.textContent = 'Modulo de Actualizacion'
+
+		})
+	</script>
+
+</body>
+</html>
